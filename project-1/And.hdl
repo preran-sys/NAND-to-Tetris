@@ -1,0 +1,21 @@
+// This file is part of www.nand2tetris.org
+// and the book "The Elements of Computing Systems"
+// by Nisan and Schocken, MIT Press.
+// File name: projects/1/And.hdl
+/**
+ * And gate:
+ * if (a and b) out = 1, else out = 0 
+ */
+CHIP And {
+    IN a, b;    
+    OUT out;
+    
+    PARTS:
+    //// Replace this comment with your code.
+    //(a NAND b) NAND (a NAND b)
+
+
+    Nand(a= a, b= b, out= aNANDbOut1);
+    Nand(a= a, b= b, out= aNANDbOut2);
+    Nand(a= aNANDbOut1, b= aNANDbOut2, out= out);
+}
