@@ -14,7 +14,6 @@ CHIP And {
     //// Replace this comment with your code.
     //(a NAND b) NAND (a NAND b)
 
-
     Nand(a= a, b= b, out= aNANDbOut1);
     Nand(a= a, b= b, out= aNANDbOut2);
     Nand(a= aNANDbOut1, b= aNANDbOut2, out= out);
