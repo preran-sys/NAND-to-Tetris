@@ -35,6 +35,7 @@ CHIP ALU {
         ny, // negate the y input?
         f,  // compute (out = x + y) or (out = x & y)?
         no; // negate the out output?
+
     OUT 
         out[16], // 16-bit output
         zr,      // if (out == 0) equals 1, else 0
@@ -42,4 +43,105 @@ CHIP ALU {
 
     PARTS:
     //// Replace this comment with your code.
+
+    // sets x = !x
+    Not16(in= x, out= Notxtmp);
+
+    // sets y = !y 
+    Not16(in= y, out= Notytmp);
+
+    // sets input = 0 and then input = !input
+    Not16(in= false, out= inputAllOnes);
+
+    Mux4Way16(a= x, b= Notxtmp, c= false, d= inputAllOnes, sel[1] = zx, sel[0]= nx, out= PreSetXInput);
+    Mux4Way16(a= y, b= Notytmp, c= false, d= inputAllOnes, sel[1]= zy, sel[0] = ny, out= PreSetYInput);
+
+    Add16(a = PreSetXInput, b = PreSetYInput, out = ComputeXplusY);
+    And16(a= PreSetXInput, b= PreSetYInput, out= ComputeXandY);
+
+    Mux16(a= ComputeXandY, b= ComputeXplusY, sel= f, out= PostSetOutput);
+
+    Not16(in= PostSetOutput, out= NegatedPostSetOutput);
+    
+    Mux16(a= PostSetOutput, b= NegatedPostSetOutput, sel= no, out = out, out[0..7] = ALUOutput1, out[7..15] =ALUOutput2, out[15] = MSB);
+
+    Or8Way(in= ALUOutput1, out= EightWayOut1);
+    Or8Way(in= ALUOutput1, out= EightWayOut2);
+
+    Or(a= EightWayOut1, b= EightWayOut2, out= isNotZero);
+    Not(in= isNotZero, out= zr);
+
+    And(a= MSB, b= true, out= ng);
 }
+
+/*
+zx = 0
+nx = 0
+
+==> x = x
+
+zx = 0
+nx = 1
+
+==> x = !x
+
+zx = 1
+nx = 0
+
+==> x = 0 --> x = 0000000000000000
+
+zx = 1
+nx = 1
+
+==> x = 0  --> x = 0000000000000000
+==> x = !x --> x = 1111111111111111
+
+*/
+
+/*
+zy = 0
+ny = 0
+
+==> y = 0
+
+zy = 0
+ny = 1
+
+==> y = !y
+
+zy = 1
+ny = 0
+
+==> y = 0 --> y = 0000000000000000
+
+zy = 1
+ny = 1
+
+==> y = 0  --> y = 0000000000000000
+==> y = !y --> y = 1111111111111111
+
+*/
+
+/*
+    Not(in= nx, out= Notnx);
+    And(a= zx, b= Notnx, out= zxAndNotnx);
+    Not(in= ny, out= Notny);
+    And(a= zy, b= Notny, out= zyAndNotny);
+    And(a= zxAndNotnx, b= zyAndNotny, out= PreSetxAndy);
+
+    And(a= PreSetxAndy, b= f, out= PreSetxAndyAndf);
+    Not(in= no, out= Notno);
+    And(a= PreSetxAndyAndf, b= Notno, out= result1);
+    Add16(a = xIsZerotmp, b = yIsZerotmp, out = outtmp);
+
+
+        Mux16(a= x, b= xIsZerotmp, sel= zx, out= zxOut);
+    Mux16(a= x, b= Notxtmp, sel= zx, out= nxOut);
+
+    Mux16(a= y, b= yIsZerotmp, sel= zy, out= zyOut);
+    Mux16(a= x, b= Notytmp, sel= zx, out= nyOut);
+
+    Mux4Way16(a= x, b= Notxtmp, c= xIsZerotmp, d= NotxMakeAllOnes, sel[0]= zx, sel[1] = nx, out= out1);
+
+
+*/
