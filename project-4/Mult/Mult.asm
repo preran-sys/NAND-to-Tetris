@@ -7,8 +7,6 @@
 // (R0, R1, R2 refer to RAM[0], RAM[1], and RAM[2], respectively.)
 // The algorithm is based on repetitive addition.
 
-//// Replace this comment with your code.
-
 // Computes: RAM[2] = RAM[0] * RAM[1]
 // Usage: R0 >= 0, R1 >= 0 and R2 < 32768
 
@@ -23,42 +21,42 @@
 // R2 = sum
    
 @i
-M = 1
+M=1
   
 @sum
-M = 0
+M=0
 
 (LOOP)
 @i   
-D = M 
+D=M 
 
 @R1  
-D = D - M
+D=D-M
    
 @STOP
 D;JGT
 
 @sum
-D = M
+D=M
 
 @R0
-D = D + M
+D=D+M
 
 @sum
-M = D
+M=D
 
 @i
-M = M + 1
+M=M+1
 
 @LOOP
 0;JMP
 
 (STOP)
 @sum
-D = M
+D=M
 
 @R2
-M = D
+M=D
 
 (END)
 @END
